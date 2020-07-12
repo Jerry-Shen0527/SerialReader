@@ -10,7 +10,14 @@ SerialReader::SerialReader() :count(0), e(false)
 	serial = new QSerialPort;
 	//创建串口对象
 	//设置串口名
-	serial->setPortName("COM7");
+
+
+	connect(serial, &QSerialPort::readyRead, this, &SerialReader::serialPort_readyRead);
+}
+
+void SerialReader::init(QString portname)
+{
+	serial->setPortName(portname);
 	//设置波特率
 	serial->setBaudRate(QSerialPort::Baud9600);
 	//设置数据位数
@@ -25,8 +32,6 @@ SerialReader::SerialReader() :count(0), e(false)
 	serial->open(QIODevice::ReadWrite);
 	bool status = serial->isOpen();
 	std::cout << status << endl;
-
-	connect(serial, &QSerialPort::readyRead, this, &SerialReader::serialPort_readyRead);
 }
 
 void SerialReader::serialPort_readyRead()
@@ -41,7 +46,7 @@ void SerialReader::serialPort_readyRead()
 		if (e == true && b == false)
 		{
 			true_count_++;
-			raw_data_.emplace_back(count/1000.0f, true_count_);
+			raw_data_.emplace_back(count/1000.0f, true_count_/ std::max(1.0f,float(gaps_per_round)));
 			sig();
 			e = b;
 		}

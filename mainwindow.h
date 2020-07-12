@@ -44,5 +44,7 @@ private:
 	double time_begin_ = 0;
 
 	bool read = false;
+
+	void set_gpr();
 };
 #endif // MAINWINDOW_H

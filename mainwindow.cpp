@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <fstream>
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -15,6 +16,17 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->Stop_button, &QPushButton::clicked, this, [this] {read = false; });
 
 	connect(ui->Clear_button, &QPushButton::clicked, this, [this] {clear(); });
+
+	connect(ui->num_of_gaps, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this] {set_gpr(); });
+	connect(ui->OpenPort, &QPushButton::clicked, this, [this] {serial_reader_.init(ui->plainTextEdit->toPlainText()); ui->checkBox->setCheckState(Qt::Checked); });
+
+	connect(ui->actionSave_raw_data, &QAction::activate, this, [this] {std::ofstream	 out(".\\result.txt");
+	for (auto raw_data : serial_reader_.raw_data_)
+	{
+		out << raw_data.x() << ' ' << raw_data.y() << endl;
+	}
+	out.close();
+		});
 }
 
 MainWindow::~MainWindow()
@@ -56,7 +68,6 @@ void MainWindow::update()
 
 void MainWindow::clear()
 {
-
 	chart_plotter_s_.clear();
 	chart_plotter_v_.clear();
 	chart_plotter_a_.clear();
@@ -65,11 +76,16 @@ void MainWindow::clear()
 	d_s_v_.clear();
 	d_v_a_.clear();
 
-	 s_to_a_.clear();
+	s_to_a_.clear();
 
-	 serial_reader_.clear();
+	serial_reader_.clear();
 
-	 count = 1;
-	 time_begin_ = 0;
-	 read = false;
+	count = 1;
+	time_begin_ = 0;
+	read = false;
+}
+
+void MainWindow::set_gpr()
+{
+	serial_reader_.set_gpr(ui->num_of_gaps->value());
 }
