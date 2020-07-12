@@ -12,6 +12,9 @@ public:
 	double top();
 	~SerialReader();
 
+	std::vector<QPointF> raw_data_;
+
+	void clear();
 signals:
 	void sig();
 
@@ -21,8 +24,9 @@ private slots:
 private:
 
 	QSerialPort* serial;
-	size_t count;
-	bool e;
+	float count;
 
-	std::vector<size_t> rawdata_;
+	float true_count_;
+
+	bool e;
 };

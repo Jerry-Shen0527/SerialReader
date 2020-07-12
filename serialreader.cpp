@@ -40,19 +40,23 @@ void SerialReader::serialPort_readyRead()
 	while (istream >> b) {
 		if (e == true && b == false)
 		{
-			rawdata_.push_back(count);
+			true_count_++;
+			raw_data_.emplace_back(count/1000.0f, true_count_);
 			sig();
+			e = b;
 		}
 		e = b;
 		count++;
 	}
+
+	e = b;
 }
 
 double SerialReader::top()
 {
-	if (!rawdata_.empty())
+	if (!raw_data_.empty())
 	{
-		return rawdata_.back();
+		return raw_data_.back().x();
 	}
 	return 0;
 }
@@ -61,4 +65,12 @@ SerialReader::~SerialReader()
 {
 	serial->close();
 	delete serial;
+}
+
+void SerialReader::clear()
+{
+	raw_data_.clear();
+	count = 0;
+	true_count_ = 0;
+	e = false;
 }

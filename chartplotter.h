@@ -5,17 +5,21 @@
 
 using namespace QtCharts;
 
-class ChartPlotter:QObject
+class ChartPlotter
 {
-
-	Q_OBJECT
 public:
-	ChartPlotter();
+	ChartPlotter(const char* name);
+	~ChartPlotter();
 
-protected slots:
-	void draw();
-
+	void clear();
 	
+	QChart* chart;
+	QLineSeries* line;
+
+	int count;
+	void update(std::vector<QPointF>& rata_);
+
+	void draw(QChartView* chart_view);
 };
 
 #endif // CHARTPLOTTER_H
