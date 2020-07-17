@@ -20,10 +20,10 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->num_of_gaps, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this] {set_gpr(); });
 	connect(ui->OpenPort, &QPushButton::clicked, this, [this] {serial_reader_.init(ui->plainTextEdit->toPlainText()); ui->checkBox->setCheckState(Qt::Checked); });
 
-	connect(ui->actionSave_raw_data, &QAction::activate, this, [this] {std::ofstream	 out(".\\result.txt");
+	connect(ui->actionSave_raw_data, &QAction::triggered, this, [this] {std::ofstream out(".\\result.txt");
 	for (auto raw_data : serial_reader_.raw_data_)
 	{
-		out << raw_data.x() << ' ' << raw_data.y() << endl;
+		out << std::to_string(raw_data.x()) << ' ' << std::to_string(raw_data.y()) << '\n';
 	}
 	out.close();
 		});
