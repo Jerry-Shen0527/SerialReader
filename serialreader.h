@@ -10,7 +10,7 @@ class SerialReader :public QObject
 public:
 	SerialReader();
 	void init(QString portname);
-	
+
 	double top();
 	~SerialReader();
 
@@ -30,9 +30,10 @@ private:
 	int gaps_per_round = 1;
 
 	QSerialPort* serial;
-	float count;
+	//float count;
 
 	float true_count_;
 
-	bool e;
+	bool first;
+	unsigned long beg;
 };

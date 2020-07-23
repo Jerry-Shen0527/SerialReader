@@ -5,21 +5,21 @@
 #include<sstream>
 #include<QDebug>
 
-SerialReader::SerialReader() :count(0), e(false)
+SerialReader::SerialReader() : first(true), true_count_(0)
 {
 	serial = new QSerialPort;
 	//创建串口对象
 	//设置串口名
-
 
 	connect(serial, &QSerialPort::readyRead, this, &SerialReader::serialPort_readyRead);
 }
 
 void SerialReader::init(QString portname)
 {
-	serial->setPortName(portname);
+	serial->setPortName("COM10");
+	//serial->setPortName(portname);
 	//设置波特率
-	serial->setBaudRate(QSerialPort::Baud9600);
+	serial->setBaudRate(QSerialPort::Baud57600);
 	//设置数据位数
 	serial->setDataBits(QSerialPort::Data8);
 	//设置奇偶校验
@@ -36,25 +36,28 @@ void SerialReader::init(QString portname)
 
 void SerialReader::serialPort_readyRead()
 {
+	QMutex mutex;
 	//从接收缓冲区中读取数据
+	mutex.lock();
 	QByteArray buffer = serial->readAll();
-	std::string temp = buffer.toStdString();
+	auto temp = buffer.toStdString();
+	//std::string temp = buffer.toStdString();
 	std::istringstream istream(temp);
 
-	bool b;
-	while (istream >> b) {
-		if (e == true && b == false)
-		{
-			true_count_++;
-			raw_data_.emplace_back(count/1000.0f, true_count_/ std::max(1.0f,float(gaps_per_round)));
-			sig();
-			e = b;
-		}
-		e = b;
-		count++;
-	}
+	unsigned long micros;
 
-	e = b;
+	if (first == true)
+	{
+		istream >> micros;
+		beg = micros;
+		first = false;
+	}
+	while (istream >> micros) {
+		true_count_++;
+		raw_data_.emplace_back((micros-beg) / 1000000.0f, true_count_ / std::max(1.0f, float(gaps_per_round)));
+		sig();
+	}
+	mutex.unlock();
 }
 
 double SerialReader::top()
@@ -75,7 +78,7 @@ SerialReader::~SerialReader()
 void SerialReader::clear()
 {
 	raw_data_.clear();
-	count = 0;
+	//count = 0;
 	true_count_ = 0;
-	e = false;
+	first = true;
 }
