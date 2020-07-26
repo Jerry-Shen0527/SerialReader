@@ -36,7 +36,7 @@ void setup() {
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
   pinMode(ledPin, OUTPUT);
-  Serial.begin(57600);
+  Serial.begin(19200);
 }
 
 void loop() {

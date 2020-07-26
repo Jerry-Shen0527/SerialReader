@@ -16,10 +16,10 @@ SerialReader::SerialReader() : first(true), true_count_(0)
 
 void SerialReader::init(QString portname)
 {
-	serial->setPortName("COM10");
+	serial->setPortName(portname);
 	//serial->setPortName(portname);
 	//设置波特率
-	serial->setBaudRate(QSerialPort::Baud57600);
+	serial->setBaudRate(QSerialPort::Baud19200);
 	//设置数据位数
 	serial->setDataBits(QSerialPort::Data8);
 	//设置奇偶校验
@@ -55,8 +55,9 @@ void SerialReader::serialPort_readyRead()
 	while (istream >> micros) {
 		true_count_++;
 		raw_data_.emplace_back((micros-beg) / 1000000.0f, true_count_ / std::max(1.0f, float(gaps_per_round)));
-		sig();
 	}
+	sig();
+
 	mutex.unlock();
 }
 

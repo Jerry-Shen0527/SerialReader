@@ -37,32 +37,42 @@ MainWindow::~MainWindow()
 void MainWindow::update()
 {
 	//ui->lcdNumber->display(serial_reader_.top());
+	freq++;
 	if (read)
 	{
-		chart_plotter_s_.update(serial_reader_.raw_data_);
-		chart_plotter_s_.draw(ui->graphicsView);
-
-		d_s_v_.update();
-
-		chart_plotter_v_.update(d_s_v_.data_);
-		chart_plotter_v_.draw(ui->graphicsView_2);
-
-		d_v_a_.update();
-
-		chart_plotter_a_.update(d_v_a_.data_);
-		chart_plotter_a_.draw(ui->graphicsView_3);
-
-		if (serial_reader_.raw_data_.size() >= 3)
+		if (freq % 10 == 0)
 		{
-			while (count < d_v_a_.data_.size())
-			{
-				s_to_a_.emplace_back(serial_reader_.raw_data_[count].y(), d_v_a_.data_[count].y());
-				count++;
-			}
-		}
 
-		chart_plotter_s_a_.update(s_to_a_);
-		chart_plotter_s_a_.draw(ui->graphicsView_4);
+
+			chart_plotter_s_.update(serial_reader_.raw_data_);
+			chart_plotter_s_.draw(ui->graphicsView);
+
+			d_s_v_.update();
+
+			chart_plotter_v_.update(d_s_v_.data_);
+			chart_plotter_v_.draw(ui->graphicsView_2);
+
+			d_v_a_.update();
+
+			chart_plotter_a_.update(d_v_a_.data_);
+			chart_plotter_a_.draw(ui->graphicsView_3);
+
+			if (serial_reader_.raw_data_.size() >= 3)
+			{
+				while (count < d_v_a_.data_.size())
+				{
+					s_to_a_.emplace_back(serial_reader_.raw_data_[count].y(), d_v_a_.data_[count].y());
+					count++;
+				}
+			}
+
+			chart_plotter_s_a_.update(s_to_a_);
+			chart_plotter_s_a_.draw(ui->graphicsView_4);
+		}
+	}
+	else
+	{
+		serial_reader_.clear();
 	}
 }
 

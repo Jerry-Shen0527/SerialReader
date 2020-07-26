@@ -40,6 +40,7 @@ private:
 	std::vector<QPointF> s_to_a_;
 
 	int count = 1;
+	int freq = 0;
 
 	double time_begin_ = 0;
 
